@@ -1,0 +1,1740 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Frustum-based 3D Detection Module Library with Custom PyTorch Operators">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../stage2_pointnet_encoding/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Stage 1 — Frustum Generation - F-ConvNet Module Extraction</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#stage-1-frustum-generation" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="F-ConvNet Module Extraction" class="md-header__button md-logo" aria-label="F-ConvNet Module Extraction" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            F-ConvNet Module Extraction
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Stage 1 — Frustum Generation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="F-ConvNet Module Extraction" class="md-nav__button md-logo" aria-label="F-ConvNet Module Extraction" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    F-ConvNet Module Extraction
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    主页
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Stage 1 — Frustum Generation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 1 — Frustum Generation
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-project_points_to_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 1. project_points_to_image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.project_points_to_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      project_points_to_image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.project_points_to_image.project_points_to_image" class="md-nav__link">
+    <span class="md-ellipsis">
+      project_points_to_image
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-filter_points_in_box2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 2. filter_points_in_box2d
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.filter_points_in_box2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      filter_points_in_box2d
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.filter_points_in_box2d.filter_points_in_box2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      filter_points_in_box2d
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-build_depth_bins_and_assign" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 3. build_depth_bins_and_assign
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.build_depth_bins_and_assign" class="md-nav__link">
+    <span class="md-ellipsis">
+      build_depth_bins_and_assign
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.build_depth_bins_and_assign.build_depth_bins_and_assign" class="md-nav__link">
+    <span class="md-ellipsis">
+      build_depth_bins_and_assign
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-group_points_by_frustum" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 4. group_points_by_frustum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.group_points_by_frustum" class="md-nav__link">
+    <span class="md-ellipsis">
+      group_points_by_frustum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_Generation.operator.group_points_by_frustum.group_points_by_frustum" class="md-nav__link">
+    <span class="md-ellipsis">
+      group_points_by_frustum
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ▶ 下一阶段
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stage2_pointnet_encoding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 2 — PointNet Encoding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stage3_sequence_feature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 3 — Sequence Feature Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stage4_fcn_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 4 — Frustum FCN Processing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../framework_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    F-ConvNet 总框架
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="stage-1-frustum-generation">Stage 1 — Frustum Generation<a class="headerlink" href="#stage-1-frustum-generation" title="Permanent link">&para;</a></h1>
+<p>本阶段负责将原始点云根据 <strong>相机投影 → 2D 检测框 → 深度切分</strong> 生成多个视锥体分区（Frustums），作为后续 PointNet 编码与 FCN 的输入。</p>
+<hr />
+<h2 id="1-project_points_to_image">📌 1. project_points_to_image<a class="headerlink" href="#1-project_points_to_image" title="Permanent link">&para;</a></h2>
+<p>将 3D 点投影至图像平面，输出像素坐标 (u,v) 与深度。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_Generation.operator.project_points_to_image"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="Frustum_Generation.operator.project_points_to_image.project_points_to_image" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">project_points_to_image</span><span class="p">(</span><span class="n">points_3d</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span></code>
+
+<a href="#Frustum_Generation.operator.project_points_to_image.project_points_to_image" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>基于相机内参 K 的 3D 点投影算子</p>
+<p>将 3D 点 (X, Y, Z) 通过相机内参矩阵 K 投影到图像平面，
+得到像素坐标 (u, v) 以及深度值 Z。
+该算子对应 frustum-based 流程中的第一个步骤，用于完成 3D→2D 投影。</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>points_3d</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>输入 3D 点张量，形状 (N, 3) 或 (B, N, 3)。
+- X, Y, Z 为相机坐标系或 rect 坐标系下的点。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>K</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>相机内参矩阵，形状 (3, 3)。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="torch.Tensor">Tensor</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple[torch.Tensor, torch.Tensor]:
+- points_2d: 投影后的像素坐标张量，形状 (N, 2) 或 (B, N, 2)。
+- depth: 深度 Z 值，形状 (N,) 或 (B, N)。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_Generation\operator\project_points_to_image.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;frustum_ops::project_points_to_image&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">project_points_to_image</span><span class="p">(</span>
+    <span class="n">points_3d</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">K</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>     <span class="c1"># ⭐ 必须写成 List[Tensor]！</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    基于相机内参 K 的 3D 点投影算子</span>
+
+<span class="sd">    将 3D 点 (X, Y, Z) 通过相机内参矩阵 K 投影到图像平面，</span>
+<span class="sd">    得到像素坐标 (u, v) 以及深度值 Z。</span>
+<span class="sd">    该算子对应 frustum-based 流程中的第一个步骤，用于完成 3D→2D 投影。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        points_3d (torch.Tensor): 输入 3D 点张量，形状 (N, 3) 或 (B, N, 3)。</span>
+<span class="sd">            - X, Y, Z 为相机坐标系或 rect 坐标系下的点。</span>
+<span class="sd">        K (torch.Tensor): 相机内参矩阵，形状 (3, 3)。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[torch.Tensor, torch.Tensor]:</span>
+<span class="sd">            - points_2d: 投影后的像素坐标张量，形状 (N, 2) 或 (B, N, 2)。</span>
+<span class="sd">            - depth: 深度 Z 值，形状 (N,) 或 (B, N)。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">single_batch</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">points_3d</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">B</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">points_3d</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">points_3d</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">points_3d</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-6</span>
+    <span class="n">Z_safe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
+
+    <span class="n">fx</span><span class="p">,</span> <span class="n">fy</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">K</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span> <span class="o">=</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">K</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="n">fx</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">/</span> <span class="n">Z_safe</span><span class="p">)</span> <span class="o">+</span> <span class="n">cx</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">fy</span> <span class="o">*</span> <span class="p">(</span><span class="n">Y</span> <span class="o">/</span> <span class="n">Z_safe</span><span class="p">)</span> <span class="o">+</span> <span class="n">cy</span>
+
+    <span class="n">points_2d</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">points_2d</span> <span class="o">=</span> <span class="n">points_2d</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># ⭐ 返回 List[Tensor]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">points_2d</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">depth</span><span class="o">.</span><span class="n">clone</span><span class="p">()]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="2-filter_points_in_box2d">📌 2. filter_points_in_box2d<a class="headerlink" href="#2-filter_points_in_box2d" title="Permanent link">&para;</a></h2>
+<p>根据 2D 检测框筛选投影点，仅保留落入 bbox 区域内的点。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_Generation.operator.filter_points_in_box2d"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="Frustum_Generation.operator.filter_points_in_box2d.filter_points_in_box2d" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">filter_points_in_box2d</span><span class="p">(</span><span class="n">points_2d</span><span class="p">,</span> <span class="n">bbox_2d</span><span class="p">,</span> <span class="n">image_width</span><span class="p">,</span> <span class="n">image_height</span><span class="p">,</span> <span class="n">use_image_bounds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+<a href="#Frustum_Generation.operator.filter_points_in_box2d.filter_points_in_box2d" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>基于 2D 检测框的投影点筛选算子</p>
+<p>对投影到图像平面的点进行筛选，返回一个布尔掩码，指示哪些点的
+(u, v) 落在给定的 2D 框以及可选的图像边界之内。
+该算子对应 Frustum 流程中的第二步，用于从全局点集中选出
+属于当前 2D 检测框的候选点。</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>points_2d</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>点的像素坐标张量，形状 (N, 2) 或 (B, N, 2)。
+- u = x 坐标（宽度方向）
+- v = y 坐标（高度方向）</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>bbox_2d</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>2D 检测框张量，形状 (4,) 或 (B, 4)，格式为
+[xmin, ymin, xmax, ymax]。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>image_width</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>图像宽度（用于裁剪到有效成像区域）。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>image_height</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>图像高度（用于裁剪到有效成像区域）。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>use_image_bounds</code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>是否同时要求点落在整张图像范围内，默认 True。</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>torch.Tensor: 布尔掩码，形状为 (N,) 或 (B, N)，
+其中 True 表示该点落在 2D 框（以及可选图像边界）内部。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_Generation\operator\filter_points_in_box2d.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;frustum_ops::filter_points_in_box2d&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">filter_points_in_box2d</span><span class="p">(</span>
+    <span class="n">points_2d</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">bbox_2d</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">image_width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">image_height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">use_image_bounds</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    基于 2D 检测框的投影点筛选算子</span>
+
+<span class="sd">    对投影到图像平面的点进行筛选，返回一个布尔掩码，指示哪些点的</span>
+<span class="sd">    (u, v) 落在给定的 2D 框以及可选的图像边界之内。</span>
+<span class="sd">    该算子对应 Frustum 流程中的第二步，用于从全局点集中选出</span>
+<span class="sd">    属于当前 2D 检测框的候选点。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        points_2d (torch.Tensor): 点的像素坐标张量，形状 (N, 2) 或 (B, N, 2)。</span>
+<span class="sd">            - u = x 坐标（宽度方向）</span>
+<span class="sd">            - v = y 坐标（高度方向）</span>
+<span class="sd">        bbox_2d (torch.Tensor): 2D 检测框张量，形状 (4,) 或 (B, 4)，格式为</span>
+<span class="sd">            [xmin, ymin, xmax, ymax]。</span>
+<span class="sd">        image_width (int): 图像宽度（用于裁剪到有效成像区域）。</span>
+<span class="sd">        image_height (int): 图像高度（用于裁剪到有效成像区域）。</span>
+<span class="sd">        use_image_bounds (bool): 是否同时要求点落在整张图像范围内，默认 True。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 布尔掩码，形状为 (N,) 或 (B, N)，</span>
+<span class="sd">            其中 True 表示该点落在 2D 框（以及可选图像边界）内部。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 统一到 batch 形式，便于广播计算</span>
+    <span class="n">single_batch</span> <span class="o">=</span> <span class="n">points_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>  <span class="c1"># (N,2) or (B,N,2)</span>
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">points_2d</span> <span class="o">=</span> <span class="n">points_2d</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>      <span class="c1"># → (1, N, 2)</span>
+
+    <span class="k">if</span> <span class="n">bbox_2d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">bbox_2d</span> <span class="o">=</span> <span class="n">bbox_2d</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>          <span class="c1"># → (1, 4)</span>
+
+    <span class="n">B</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">points_2d</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># 拆分坐标</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">points_2d</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">points_2d</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># 拆分 bbox，支持每个 batch 一个框</span>
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">bbox_2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="n">bbox_2d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">bbox_2d</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="n">bbox_2d</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># 在 2D 框内部的条件</span>
+    <span class="n">in_box</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">&gt;=</span> <span class="n">xmin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">u</span> <span class="o">&lt;</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v</span> <span class="o">&gt;=</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v</span> <span class="o">&lt;</span> <span class="n">ymax</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">use_image_bounds</span><span class="p">:</span>
+        <span class="c1"># 进一步要求点落在整张图像范围内</span>
+        <span class="n">in_img</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">u</span> <span class="o">&lt;</span> <span class="n">image_width</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v</span> <span class="o">&lt;</span> <span class="n">image_height</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">in_box</span> <span class="o">&amp;</span> <span class="n">in_img</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">in_box</span>
+
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 回到 (N,)</span>
+
+    <span class="k">return</span> <span class="n">mask</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="3-build_depth_bins_and_assign">📌 3. build_depth_bins_and_assign<a class="headerlink" href="#3-build_depth_bins_and_assign" title="Permanent link">&para;</a></h2>
+<p>构建深度区间（depth bins），并为每个点分配对应的 frustum index。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_Generation.operator.build_depth_bins_and_assign"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="Frustum_Generation.operator.build_depth_bins_and_assign.build_depth_bins_and_assign" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">build_depth_bins_and_assign</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">z_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#Frustum_Generation.operator.build_depth_bins_and_assign.build_depth_bins_and_assign" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Frustum 流程中的深度划分与分桶算子</p>
+<p>根据给定的深度值序列，将深度轴按固定的 bin_size 与 stride
+划分为一组连续的深度区间（sliding depth bins），并为每个点
+分配其所属的 bin 索引（frustum index）。该算子对应 Sliding Frustums
+的核心几何步骤，用于后续按深度分组点云。</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>depth</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>深度张量，形状为 (N,) 或 (B, N)。
+- N: 点数量
+- B: 批大小（可选）</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>bin_size</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>单个深度 bin 的长度，对应论文中的 u。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>stride</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>邻接深度 bin 的滑动步长，对应论文中的 s。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>z_min</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>深度区间下界，若为 None 则使用 depth 的最小值。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>z_max</code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>深度区间上界，若为 None 则使用 depth 的最大值。</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="torch.Tensor">Tensor</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple[torch.Tensor, torch.Tensor]:
+- bins (torch.Tensor): 深度 bin 定义张量，形状 (T, 2)，
+  每行为 [z_start, z_end]。
+- frustum_index (torch.Tensor): 每个点所属的 bin 索引，
+  形状与 depth 相同，类型为 torch.long。
+  - 若点深度不在 [z_min, z_max] 有效覆盖范围内，则索引为 -1。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_Generation\operator\build_depth_bins_and_assign.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;frustum_ops::build_depth_bins_and_assign&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_depth_bins_and_assign</span><span class="p">(</span>
+    <span class="n">depth</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">bin_size</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">z_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">z_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>     <span class="c1"># ⭐ 多返回值 → List[Tensor]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Frustum 流程中的深度划分与分桶算子</span>
+
+<span class="sd">    根据给定的深度值序列，将深度轴按固定的 bin_size 与 stride</span>
+<span class="sd">    划分为一组连续的深度区间（sliding depth bins），并为每个点</span>
+<span class="sd">    分配其所属的 bin 索引（frustum index）。该算子对应 Sliding Frustums</span>
+<span class="sd">    的核心几何步骤，用于后续按深度分组点云。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        depth (torch.Tensor): 深度张量，形状为 (N,) 或 (B, N)。</span>
+<span class="sd">            - N: 点数量</span>
+<span class="sd">            - B: 批大小（可选）</span>
+<span class="sd">        bin_size (float): 单个深度 bin 的长度，对应论文中的 u。</span>
+<span class="sd">        stride (float): 邻接深度 bin 的滑动步长，对应论文中的 s。</span>
+<span class="sd">        z_min (float, optional): 深度区间下界，若为 None 则使用 depth 的最小值。</span>
+<span class="sd">        z_max (float, optional): 深度区间上界，若为 None 则使用 depth 的最大值。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[torch.Tensor, torch.Tensor]:</span>
+<span class="sd">            - bins (torch.Tensor): 深度 bin 定义张量，形状 (T, 2)，</span>
+<span class="sd">              每行为 [z_start, z_end]。</span>
+<span class="sd">            - frustum_index (torch.Tensor): 每个点所属的 bin 索引，</span>
+<span class="sd">              形状与 depth 相同，类型为 torch.long。</span>
+<span class="sd">              - 若点深度不在 [z_min, z_max] 有效覆盖范围内，则索引为 -1。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 统一 batch</span>
+    <span class="n">single_batch</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">B</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">z_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">z_min_val</span> <span class="o">=</span> <span class="n">depth</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span><span class="o">.</span><span class="n">amin</span><span class="p">()</span> <span class="k">if</span> <span class="n">valid_mask</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">else</span> <span class="n">depth</span><span class="o">.</span><span class="n">amin</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">z_min_val</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">z_min</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">z_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">z_max_val</span> <span class="o">=</span> <span class="n">depth</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span><span class="o">.</span><span class="n">amax</span><span class="p">()</span> <span class="k">if</span> <span class="n">valid_mask</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">else</span> <span class="n">depth</span><span class="o">.</span><span class="n">amax</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">z_max_val</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">z_max</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="n">span</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">z_max_val</span> <span class="o">-</span> <span class="n">z_min_val</span> <span class="o">-</span> <span class="n">bin_size</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">span</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">//</span> <span class="n">stride</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">starts</span> <span class="o">=</span> <span class="n">z_min_val</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span> <span class="o">*</span> <span class="n">stride</span>
+    <span class="n">ends</span> <span class="o">=</span> <span class="n">starts</span> <span class="o">+</span> <span class="n">bin_size</span>
+    <span class="n">bins</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>     <span class="c1"># (T,2)</span>
+
+    <span class="n">frustum_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">depth</span> <span class="o">-</span> <span class="n">z_min_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">stride</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+
+    <span class="n">valid_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;=</span> <span class="n">z_min_val</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">z_min_val</span> <span class="o">+</span> <span class="n">stride</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">bin_size</span><span class="p">))</span>
+    <span class="n">frustum_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">valid_range</span><span class="p">,</span> <span class="n">frustum_index</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">frustum_index</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">frustum_index</span> <span class="o">=</span> <span class="n">frustum_index</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># ⭐ 返回 List[Tensor]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">bins</span><span class="p">,</span> <span class="n">frustum_index</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="4-group_points_by_frustum">📌 4. group_points_by_frustum<a class="headerlink" href="#4-group_points_by_frustum" title="Permanent link">&para;</a></h2>
+<p>按深度分桶结果，将点云聚类为多个 frustum 点集，并进行上限裁剪与掩码生成。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_Generation.operator.group_points_by_frustum"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="Frustum_Generation.operator.group_points_by_frustum.group_points_by_frustum" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">group_points_by_frustum</span><span class="p">(</span><span class="n">points_3d</span><span class="p">,</span> <span class="n">frustum_index</span><span class="p">,</span> <span class="n">num_frustums</span><span class="p">,</span> <span class="n">max_points_per_frustum</span><span class="p">)</span></code>
+
+<a href="#Frustum_Generation.operator.group_points_by_frustum.group_points_by_frustum" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Frustum 流程中的按深度分组算子</p>
+<p>根据每个点所属的 frustum 索引，将输入点云按 frustum 进行分组，
+得到形状为 (B, T, M, 3) 的分组点云张量，以及对应的有效点掩码。
+其中：
+    - B: 批大小
+    - T: frustum 数量（num_frustums）
+    - M: 每个 frustum 保留的最大点数（max_points_per_frustum）</p>
+<p>对于某个 frustum 内点数多于 M 的情况，将随机下采样到 M 个；
+点数少于 M 的情况，则进行零填充，并通过 mask 指示有效点位置。</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>points_3d</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>输入 3D 点云张量，形状 (N, 3) 或 (B, N, 3)。
+- N: 点数量</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>frustum_index</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>每个点所属的 frustum 索引，形状 (N,) 或 (B, N)，
+- 值域为 [0, num_frustums-1]，若为 -1 表示该点不属于任何有效 frustum。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>num_frustums</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>frustum 总数量 T。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>max_points_per_frustum</code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>每个 frustum 最多保留的点数 M。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="torch.Tensor">Tensor</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tuple[torch.Tensor, torch.Tensor]:
+- frustum_points: 分组后的点云张量，形状 (B, T, M, 3)。
+- frustum_valid_mask: 有效点掩码，形状 (B, T, M)，
+  其中 True 表示对应位置为真实点，False 表示填充点。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_Generation\operator\group_points_by_frustum.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;frustum_ops::group_points_by_frustum&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">group_points_by_frustum</span><span class="p">(</span>
+    <span class="n">points_3d</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">frustum_index</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">num_frustums</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">max_points_per_frustum</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>      <span class="c1"># ⭐ 必须是 List[Tensor]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Frustum 流程中的按深度分组算子</span>
+
+<span class="sd">    根据每个点所属的 frustum 索引，将输入点云按 frustum 进行分组，</span>
+<span class="sd">    得到形状为 (B, T, M, 3) 的分组点云张量，以及对应的有效点掩码。</span>
+<span class="sd">    其中：</span>
+<span class="sd">        - B: 批大小</span>
+<span class="sd">        - T: frustum 数量（num_frustums）</span>
+<span class="sd">        - M: 每个 frustum 保留的最大点数（max_points_per_frustum）</span>
+
+<span class="sd">    对于某个 frustum 内点数多于 M 的情况，将随机下采样到 M 个；</span>
+<span class="sd">    点数少于 M 的情况，则进行零填充，并通过 mask 指示有效点位置。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        points_3d (torch.Tensor): 输入 3D 点云张量，形状 (N, 3) 或 (B, N, 3)。</span>
+<span class="sd">            - N: 点数量</span>
+<span class="sd">        frustum_index (torch.Tensor): 每个点所属的 frustum 索引，形状 (N,) 或 (B, N)，</span>
+<span class="sd">            - 值域为 [0, num_frustums-1]，若为 -1 表示该点不属于任何有效 frustum。</span>
+<span class="sd">        num_frustums (int): frustum 总数量 T。</span>
+<span class="sd">        max_points_per_frustum (int): 每个 frustum 最多保留的点数 M。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[torch.Tensor, torch.Tensor]:</span>
+<span class="sd">            - frustum_points: 分组后的点云张量，形状 (B, T, M, 3)。</span>
+<span class="sd">            - frustum_valid_mask: 有效点掩码，形状 (B, T, M)，</span>
+<span class="sd">              其中 True 表示对应位置为真实点，False 表示填充点。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">single_batch</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">points_3d</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">frustum_index</span> <span class="o">=</span> <span class="n">frustum_index</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">B</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">device</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">points_3d</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_frustums</span><span class="p">)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_points_per_frustum</span><span class="p">)</span>
+
+    <span class="n">frustum_points</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">frustum_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">):</span>
+        <span class="n">idx_b</span> <span class="o">=</span> <span class="n">frustum_index</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+        <span class="n">pts_b</span> <span class="o">=</span> <span class="n">points_3d</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+            <span class="n">sel</span> <span class="o">=</span> <span class="p">(</span><span class="n">idx_b</span> <span class="o">==</span> <span class="n">t</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">sel</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">sel</span><span class="p">,</span> <span class="n">as_tuple</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">K</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">K</span> <span class="o">&gt;</span> <span class="n">M</span><span class="p">:</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)[:</span><span class="n">M</span><span class="p">]</span>
+                <span class="n">chosen</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chosen</span> <span class="o">=</span> <span class="n">indices</span>
+
+            <span class="n">Kc</span> <span class="o">=</span> <span class="n">chosen</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+            <span class="n">frustum_points</span><span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:</span><span class="n">Kc</span><span class="p">]</span> <span class="o">=</span> <span class="n">pts_b</span><span class="p">[</span><span class="n">chosen</span><span class="p">]</span>
+            <span class="n">frustum_mask</span><span class="p">[</span><span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="p">:</span><span class="n">Kc</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">single_batch</span><span class="p">:</span>
+        <span class="n">frustum_points</span> <span class="o">=</span> <span class="n">frustum_points</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">frustum_mask</span> <span class="o">=</span> <span class="n">frustum_mask</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># ⭐ 返回 List[Tensor]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">frustum_points</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">frustum_mask</span><span class="o">.</span><span class="n">clone</span><span class="p">()]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="_1">▶ 下一阶段<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>进入：<br />
+<a href="../stage2_pointnet_encoding/"><strong>Stage 2 — PointNet Feature Encoding</strong></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand", "navigation.sections", "navigation.top", "toc.integrate", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

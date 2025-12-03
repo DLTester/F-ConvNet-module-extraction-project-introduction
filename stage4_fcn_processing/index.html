@@ -1,0 +1,2052 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Frustum-based 3D Detection Module Library with Custom PyTorch Operators">
+      
+      
+      
+      
+        <link rel="prev" href="../stage3_sequence_feature/">
+      
+      
+        <link rel="next" href="../framework_overview/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Stage 4 — Frustum FCN Processing - F-ConvNet Module Extraction</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#stage-4-frustum-fcn-processing" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="F-ConvNet Module Extraction" class="md-header__button md-logo" aria-label="F-ConvNet Module Extraction" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            F-ConvNet Module Extraction
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Stage 4 — Frustum FCN Processing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="F-ConvNet Module Extraction" class="md-nav__button md-logo" aria-label="F-ConvNet Module Extraction" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    F-ConvNet Module Extraction
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    主页
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stage1_frustum_generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 1 — Frustum Generation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stage2_pointnet_encoding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 2 — PointNet Encoding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stage3_sequence_feature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 3 — Sequence Feature Construction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Stage 4 — Frustum FCN Processing
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stage 4 — Frustum FCN Processing
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-frustumconvblock" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 1. FrustumConvBlock
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumConvBlock" class="md-nav__link">
+    <span class="md-ellipsis">
+      FrustumConvBlock
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock" class="md-nav__link">
+    <span class="md-ellipsis">
+      FrustumConvBlock
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FrustumConvBlock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      结构说明（按顺序）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      输入
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      输出
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      模块用途
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-frustumdeconv" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 2. FrustumDeconv
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumDeconv" class="md-nav__link">
+    <span class="md-ellipsis">
+      FrustumDeconv
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv" class="md-nav__link">
+    <span class="md-ellipsis">
+      FrustumDeconv
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FrustumDeconv">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      结构说明（按顺序）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      输入
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      输出
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      模块用途
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-channelreduce1x1" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 3. ChannelReduce1x1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.ChannelReduce1x1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChannelReduce1x1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.ChannelReduce1x1.ChannelReduce1x1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ChannelReduce1x1
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ChannelReduce1x1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.network.ChannelReduce1x1.ChannelReduce1x1.forward" class="md-nav__link">
+    <span class="md-ellipsis">
+      forward
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-align_and_concat_multiscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      📌 4. align_and_concat_multiscale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.operator.align_and_concat_multiscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      align_and_concat_multiscale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#Frustum_FCN_Processing.operator.align_and_concat_multiscale.align_and_concat_multiscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      align_and_concat_multiscale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ▶ 下一部分
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../framework_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    F-ConvNet 总框架
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="stage-4-frustum-fcn-processing">Stage 4 — Frustum FCN Processing<a class="headerlink" href="#stage-4-frustum-fcn-processing" title="Permanent link">&para;</a></h1>
+<p>本阶段使用多尺度 1D/2D 类 FCN 结构对序列特征进行进一步编码、<br />
+下采样、上采样与跨尺度融合，最终输出用于 3D 检测任务的高层融合特征。</p>
+<hr />
+<h2 id="1-frustumconvblock">📌 1. FrustumConvBlock<a class="headerlink" href="#1-frustumconvblock" title="Permanent link">&para;</a></h2>
+<p>用于序列特征的卷积编码模块，可选下采样。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_FCN_Processing.network.FrustumConvBlock"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock" class="doc doc-heading">
+            <code>FrustumConvBlock</code>
+
+
+<a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+        <p>FrustumConvBlock 模块（F-ConvNet FCN 阶段的 1D 卷积基础块）。</p>
+<p>该模块在「frustum 序列」维度上执行一维卷积，用于聚合相邻 frustum
+的上下文信息。其本质是由两层 <code>Conv1d + BN + ReLU</code> 组成的卷积块，
+支持可选的 stride=2 下采样，用于逐步压缩 frustum 序列长度并扩大感受野。</p>
+<p>本模块属于 <strong>可学习算子</strong>，其卷积核参数在训练过程中根据监督信号更新。
+通常用于构建 F-ConvNet 中的 FCN 主干网络（类似 det_base.ConvFeatNet
+里的 block2_conv、block3_conv、block4_conv 结构）。:contentReference[oaicite:2]{index=2}</p>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_1">结构说明（按顺序）<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_1" title="Permanent link">&para;</a></h5>
+<ol>
+<li><strong>Conv1d C_in → C_mid, kernel=3, stride=1, padding=1</strong></li>
+<li>在 frustum 序列上提取局部上下文特征。</li>
+<li><strong>BatchNorm1d + ReLU</strong></li>
+<li><strong>Conv1d C_mid → C_out, kernel=3, stride=1 或 2, padding=1</strong></li>
+<li>若 downsample=True，则 stride=2，实现序列下采样。</li>
+<li>否则保持长度不变，仅做特征增强。</li>
+<li><strong>BatchNorm1d + ReLU</strong></li>
+</ol>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_2">输入<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_2" title="Permanent link">&para;</a></h5>
+<p>Args:
+    x (torch.Tensor):
+        Frustum 序列特征，shape 为 <strong>(B, C_in, L)</strong>：
+        - B：batch size
+        - C_in：输入通道数（例如 128/256 等）
+        - L：frustum 序列长度（沿深度方向的 frustum 数量）</p>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_3">输出<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_3" title="Permanent link">&para;</a></h5>
+<p>Returns:
+    torch.Tensor:
+        经过两层 Conv1d 处理后的特征，shape 为 <strong>(B, C_out, L')</strong>：
+        - C_out：输出通道数
+        - L'：输出序列长度（若 downsample=True，则约为 L/2）</p>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_4">模块用途<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock--_4" title="Permanent link">&para;</a></h5>
+<ul>
+<li>在 frustum 维度上做 1D 卷积，建模相邻 frustum 的上下文关系</li>
+<li>通过 stride=2 实现逐步下采样，配合 DeConv 形成 U-Net/FPN 式结构</li>
+<li>是 F-ConvNet FCN 阶段的基础构建单元，可堆叠形成多层多尺度表示</li>
+</ul>
+
+              <details class="quote">
+                <summary>Source code in <code>Frustum_FCN_Processing\network\FrustumConvBlock.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FrustumConvBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    FrustumConvBlock 模块（F-ConvNet FCN 阶段的 1D 卷积基础块）。</span>
+
+<span class="sd">    该模块在「frustum 序列」维度上执行一维卷积，用于聚合相邻 frustum</span>
+<span class="sd">    的上下文信息。其本质是由两层 `Conv1d + BN + ReLU` 组成的卷积块，</span>
+<span class="sd">    支持可选的 stride=2 下采样，用于逐步压缩 frustum 序列长度并扩大感受野。</span>
+
+<span class="sd">    本模块属于 **可学习算子**，其卷积核参数在训练过程中根据监督信号更新。</span>
+<span class="sd">    通常用于构建 F-ConvNet 中的 FCN 主干网络（类似 det_base.ConvFeatNet</span>
+<span class="sd">    里的 block2_conv、block3_conv、block4_conv 结构）。:contentReference[oaicite:2]{index=2}</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 结构说明（按顺序）</span>
+<span class="sd">    1. **Conv1d C_in → C_mid, kernel=3, stride=1, padding=1**</span>
+<span class="sd">       - 在 frustum 序列上提取局部上下文特征。</span>
+<span class="sd">    2. **BatchNorm1d + ReLU**</span>
+<span class="sd">    3. **Conv1d C_mid → C_out, kernel=3, stride=1 或 2, padding=1**</span>
+<span class="sd">       - 若 downsample=True，则 stride=2，实现序列下采样。</span>
+<span class="sd">       - 否则保持长度不变，仅做特征增强。</span>
+<span class="sd">    4. **BatchNorm1d + ReLU**</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 输入</span>
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor):</span>
+<span class="sd">            Frustum 序列特征，shape 为 **(B, C_in, L)**：</span>
+<span class="sd">            - B：batch size</span>
+<span class="sd">            - C_in：输入通道数（例如 128/256 等）</span>
+<span class="sd">            - L：frustum 序列长度（沿深度方向的 frustum 数量）</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 输出</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor:</span>
+<span class="sd">            经过两层 Conv1d 处理后的特征，shape 为 **(B, C_out, L&#39;)**：</span>
+<span class="sd">            - C_out：输出通道数</span>
+<span class="sd">            - L&#39;：输出序列长度（若 downsample=True，则约为 L/2）</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 模块用途</span>
+<span class="sd">    - 在 frustum 维度上做 1D 卷积，建模相邻 frustum 的上下文关系</span>
+<span class="sd">    - 通过 stride=2 实现逐步下采样，配合 DeConv 形成 U-Net/FPN 式结构</span>
+<span class="sd">    - 是 F-ConvNet FCN 阶段的基础构建单元，可堆叠形成多层多尺度表示</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">mid_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">downsample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">mid_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mid_channels</span> <span class="o">=</span> <span class="n">out_channels</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">downsample</span> <span class="o">=</span> <span class="n">downsample</span>
+        <span class="n">stride2</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">downsample</span> <span class="k">else</span> <span class="mi">1</span>
+
+        <span class="c1"># 第一层卷积：C_in → C_mid，保持长度不变</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">mid_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">mid_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># 第二层卷积：C_mid → C_out，可选下采样</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">mid_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        前向传播：在 frustum 序列维度上执行两层 1D 卷积。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor):</span>
+<span class="sd">                输入特征 (B, C_in, L)。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor:</span>
+<span class="sd">                输出特征 (B, C_out, L&#39;)。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Conv1d + BN + ReLU</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Conv1d(+stride) + BN + ReLU</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock.forward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+
+<a href="#Frustum_FCN_Processing.network.FrustumConvBlock.FrustumConvBlock.forward" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>前向传播：在 frustum 序列维度上执行两层 1D 卷积。</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>x</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>输入特征 (B, C_in, L)。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>torch.Tensor:
+输出特征 (B, C_out, L')。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_FCN_Processing\network\FrustumConvBlock.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    前向传播：在 frustum 序列维度上执行两层 1D 卷积。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor):</span>
+<span class="sd">            输入特征 (B, C_in, L)。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor:</span>
+<span class="sd">            输出特征 (B, C_out, L&#39;)。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Conv1d + BN + ReLU</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Conv1d(+stride) + BN + ReLU</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="2-frustumdeconv">📌 2. FrustumDeconv<a class="headerlink" href="#2-frustumdeconv" title="Permanent link">&para;</a></h2>
+<p>用于跨尺度上采样（deconvolution / upsample）的反卷积模块。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_FCN_Processing.network.FrustumDeconv"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv" class="doc doc-heading">
+            <code>FrustumDeconv</code>
+
+
+<a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+        <p>FrustumDeconv 模块（F-ConvNet FCN 阶段的 1D 反卷积上采样块）。</p>
+<p>该模块在 frustum 序列维度上执行一维反卷积（ConvTranspose1d），
+用于将低分辨率的 frustum 序列特征上采样到更高分辨率。
+属于 FCN（Fully Convolutional Network）结构的“解码器”部分，
+常与 FrustumConvBlock（算子 9）一起构成 U-Net/FPN 式多尺度结构。</p>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_1">结构说明（按顺序）<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_1" title="Permanent link">&para;</a></h5>
+<ol>
+<li><strong>ConvTranspose1d C_in → C_out</strong></li>
+<li>kernel_size: 控制上采样倍率（如 1/2/4）</li>
+<li>stride: 通常与 kernel_size 相同</li>
+<li>padding/输出长度严格对齐 F-ConvNet 需求</li>
+<li><strong>BatchNorm1d</strong></li>
+<li><strong>ReLU 激活</strong></li>
+</ol>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_2">输入<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_2" title="Permanent link">&para;</a></h5>
+<p>Args:
+    x (torch.Tensor):
+        序列特征，形状 (B, C_in, L_low)：
+        - B: batch size
+        - C_in: 输入通道数
+        - L_low: 低分辨率 frustum 序列长度</p>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_3">输出<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_3" title="Permanent link">&para;</a></h5>
+<p>Returns:
+    torch.Tensor:
+        上采样后的特征 (B, C_out, L_high)
+        - C_out: 输出通道数
+        - L_high: 上采样后的序列长度
+          （取决于 kernel_size 与 stride）</p>
+<hr />
+<h5 id="Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_4">模块用途<a class="headerlink" href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv--_4" title="Permanent link">&para;</a></h5>
+<ul>
+<li>将深层（低分辨率）frustum 特征上采样</li>
+<li>用于 F-ConvNet FCN 的多尺度融合阶段（对应 block2/3/4 的 DeConv）:contentReference[oaicite:2]{index=2}</li>
+<li>与多尺度 concat（算子 11）配合构成 frustum 方向的特征金字塔</li>
+</ul>
+
+              <details class="quote">
+                <summary>Source code in <code>Frustum_FCN_Processing\network\FrustumDeconv.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FrustumDeconv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    FrustumDeconv 模块（F-ConvNet FCN 阶段的 1D 反卷积上采样块）。</span>
+
+<span class="sd">    该模块在 frustum 序列维度上执行一维反卷积（ConvTranspose1d），</span>
+<span class="sd">    用于将低分辨率的 frustum 序列特征上采样到更高分辨率。</span>
+<span class="sd">    属于 FCN（Fully Convolutional Network）结构的“解码器”部分，</span>
+<span class="sd">    常与 FrustumConvBlock（算子 9）一起构成 U-Net/FPN 式多尺度结构。</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 结构说明（按顺序）</span>
+<span class="sd">    1. **ConvTranspose1d C_in → C_out**</span>
+<span class="sd">       - kernel_size: 控制上采样倍率（如 1/2/4）</span>
+<span class="sd">       - stride: 通常与 kernel_size 相同</span>
+<span class="sd">       - padding/输出长度严格对齐 F-ConvNet 需求</span>
+<span class="sd">    2. **BatchNorm1d**</span>
+<span class="sd">    3. **ReLU 激活**</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 输入</span>
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor):</span>
+<span class="sd">            序列特征，形状 (B, C_in, L_low)：</span>
+<span class="sd">            - B: batch size</span>
+<span class="sd">            - C_in: 输入通道数</span>
+<span class="sd">            - L_low: 低分辨率 frustum 序列长度</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 输出</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor:</span>
+<span class="sd">            上采样后的特征 (B, C_out, L_high)</span>
+<span class="sd">            - C_out: 输出通道数</span>
+<span class="sd">            - L_high: 上采样后的序列长度</span>
+<span class="sd">              （取决于 kernel_size 与 stride）</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 模块用途</span>
+<span class="sd">    - 将深层（低分辨率）frustum 特征上采样</span>
+<span class="sd">    - 用于 F-ConvNet FCN 的多尺度融合阶段（对应 block2/3/4 的 DeConv）:contentReference[oaicite:2]{index=2}</span>
+<span class="sd">    - 与多尺度 concat（算子 11）配合构成 frustum 方向的特征金字塔</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">padding</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># DeConv1d: 1D 反卷积，上采样核心操作</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deconv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ConvTranspose1d</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="p">,</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span>
+            <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        前向传播：对 frustum 序列执行 1D 反卷积上采样。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): (B, C_in, L_low)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: (B, C_out, L_high)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deconv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 上采样</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv.forward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+
+<a href="#Frustum_FCN_Processing.network.FrustumDeconv.FrustumDeconv.forward" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>前向传播：对 frustum 序列执行 1D 反卷积上采样。</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>x</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(B, C_in, L_low)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>torch.Tensor: (B, C_out, L_high)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_FCN_Processing\network\FrustumDeconv.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    前向传播：对 frustum 序列执行 1D 反卷积上采样。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor): (B, C_in, L_low)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: (B, C_out, L_high)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deconv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># 上采样</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="3-channelreduce1x1">📌 3. ChannelReduce1x1<a class="headerlink" href="#3-channelreduce1x1" title="Permanent link">&para;</a></h2>
+<p>用于融合后的多尺度特征通道压缩（1×1 卷积 + BN + ReLU）。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_FCN_Processing.network.ChannelReduce1x1"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="Frustum_FCN_Processing.network.ChannelReduce1x1.ChannelReduce1x1" class="doc doc-heading">
+            <code>ChannelReduce1x1</code>
+
+
+<a href="#Frustum_FCN_Processing.network.ChannelReduce1x1.ChannelReduce1x1" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+        <p>ChannelReduce1x1 模块（Frustum 多尺度特征通道压缩算子）。</p>
+<p>该模块通过 1×1 的 Conv1d 实现通道维度的线性映射，用于在保持
+ frustum 序列长度不变的前提下，将拼接后的高维特征压缩到指定的
+通道数。通常接在多尺度特征融合（算子 11）之后，是 F-ConvNet 中
+ FCN 部分通往检测头（CLS/REG）的关键桥接层。</p>
+<hr />
+<p>### 结构说明（按顺序）
+ 1. <strong>Conv1d C_in → C_out, kernel_size=1, stride=1, padding=0</strong>
+    - 对每个 frustum 位置做通道维线性变换
+ 2. <strong>(可选) BatchNorm1d</strong>
+ 3. <strong>(可选) ReLU 激活</strong>
+    - 是否使用 BN/激活由初始化参数控制</p>
+<hr />
+<p>### 输入
+ Args:
+     x (torch.Tensor):
+         Frustum 序列特征，形状 (B, C_in, L)：
+         - B: batch size
+         - C_in: 输入通道数（如多尺度 concat 后的通道数）
+         - L: frustum 序列长度</p>
+<hr />
+<p>### 输出
+ Returns:
+     torch.Tensor:
+         通道压缩后的特征，形状 (B, C_out, L)。</p>
+<hr />
+<p>### 模块用途
+ - 将多尺度拼接后的高维特征压缩到目标通道数
+ - 作为 FCN 输出特征与后续检测头之间的接口层
+ - 也可用于任意需要 1×1 Conv 通道映射的 frustum 序列场景</p>
+
+              <details class="quote">
+                <summary>Source code in <code>Frustum_FCN_Processing\network\ChannelReduce1x1.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ChannelReduce1x1</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ChannelReduce1x1 模块（Frustum 多尺度特征通道压缩算子）。</span>
+
+<span class="sd">    该模块通过 1×1 的 Conv1d 实现通道维度的线性映射，用于在保持</span>
+<span class="sd">    frustum 序列长度不变的前提下，将拼接后的高维特征压缩到指定的</span>
+<span class="sd">   通道数。通常接在多尺度特征融合（算子 11）之后，是 F-ConvNet 中</span>
+<span class="sd">    FCN 部分通往检测头（CLS/REG）的关键桥接层。</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 结构说明（按顺序）</span>
+<span class="sd">    1. **Conv1d C_in → C_out, kernel_size=1, stride=1, padding=0**</span>
+<span class="sd">       - 对每个 frustum 位置做通道维线性变换</span>
+<span class="sd">    2. **(可选) BatchNorm1d**</span>
+<span class="sd">    3. **(可选) ReLU 激活**</span>
+<span class="sd">       - 是否使用 BN/激活由初始化参数控制</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 输入</span>
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor):</span>
+<span class="sd">            Frustum 序列特征，形状 (B, C_in, L)：</span>
+<span class="sd">            - B: batch size</span>
+<span class="sd">            - C_in: 输入通道数（如多尺度 concat 后的通道数）</span>
+<span class="sd">            - L: frustum 序列长度</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 输出</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor:</span>
+<span class="sd">            通道压缩后的特征，形状 (B, C_out, L)。</span>
+
+<span class="sd">    ---</span>
+<span class="sd">    ### 模块用途</span>
+<span class="sd">    - 将多尺度拼接后的高维特征压缩到目标通道数</span>
+<span class="sd">    - 作为 FCN 输出特征与后续检测头之间的接口层</span>
+<span class="sd">    - 也可用于任意需要 1×1 Conv 通道映射的 frustum 序列场景</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">use_bn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_relu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv1d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">use_bn</span><span class="p">:</span>
+            <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm1d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">use_relu</span><span class="p">:</span>
+            <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">=</span> <span class="n">out_channels</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        前向传播：对通道维执行 1×1 卷积（及可选 BN/激活）。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): (B, C_in, L)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: (B, C_out, L)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="Frustum_FCN_Processing.network.ChannelReduce1x1.ChannelReduce1x1.forward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></code>
+
+<a href="#Frustum_FCN_Processing.network.ChannelReduce1x1.ChannelReduce1x1.forward" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>前向传播：对通道维执行 1×1 卷积（及可选 BN/激活）。</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>x</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(B, C_in, L)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>torch.Tensor: (B, C_out, L)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_FCN_Processing\network\ChannelReduce1x1.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    前向传播：对通道维执行 1×1 卷积（及可选 BN/激活）。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (torch.Tensor): (B, C_in, L)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: (B, C_out, L)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="4-align_and_concat_multiscale">📌 4. align_and_concat_multiscale<a class="headerlink" href="#4-align_and_concat_multiscale" title="Permanent link">&para;</a></h2>
+<p>将不同尺度的特征在长度维进行对齐，并沿通道维进行拼接融合。</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="Frustum_FCN_Processing.operator.align_and_concat_multiscale"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="Frustum_FCN_Processing.operator.align_and_concat_multiscale.align_and_concat_multiscale" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">align_and_concat_multiscale</span><span class="p">(</span><span class="n">feat_high</span><span class="p">,</span> <span class="n">feat_mid</span><span class="p">,</span> <span class="n">feat_low</span><span class="p">)</span></code>
+
+<a href="#Frustum_FCN_Processing.operator.align_and_concat_multiscale.align_and_concat_multiscale" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>AlignAndConcatMultiscale 算子（Frustum 多尺度特征对齐与级联融合）。</p>
+<p>对多尺度 frustum 特征在长度维度上进行对齐，并在通道维度进行拼接：
+    - 以 feat_high 的长度 L_h 作为基准长度
+    - feat_mid / feat_low 按照 [:, :, :L_h] 进行裁剪
+    - 最终在通道维上 cat 得到 (B, C_h + C_m + C_l, L_h)</p>
+<p>该算子对应 F-ConvNet 原实现中 ConvFeatNet 的多尺度融合步骤：
+    x = torch.cat([xx1,
+                   xx2[:, :, :xx1.shape[-1]],
+                   xx3[:, :, :xx1.shape[-1]]], 1)</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>feat_high</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>高分辨率特征，形状 (B, C_h, L_h)。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>feat_mid</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>中等分辨率特征，形状 (B, C_m, L_m)。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>feat_low</code></td>
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>低分辨率特征，形状 (B, C_l, L_l)。</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>torch.Tensor: 融合后的多尺度特征，形状 (B, C_h + C_m + C_l, L_h)。</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+            <details class="quote">
+              <summary>Source code in <code>Frustum_FCN_Processing\operator\align_and_concat_multiscale.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;frustum_ops::align_and_concat_multiscale&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">align_and_concat_multiscale</span><span class="p">(</span>
+    <span class="n">feat_high</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">feat_mid</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">feat_low</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    AlignAndConcatMultiscale 算子（Frustum 多尺度特征对齐与级联融合）。</span>
+
+<span class="sd">    对多尺度 frustum 特征在长度维度上进行对齐，并在通道维度进行拼接：</span>
+<span class="sd">        - 以 feat_high 的长度 L_h 作为基准长度</span>
+<span class="sd">        - feat_mid / feat_low 按照 [:, :, :L_h] 进行裁剪</span>
+<span class="sd">        - 最终在通道维上 cat 得到 (B, C_h + C_m + C_l, L_h)</span>
+
+<span class="sd">    该算子对应 F-ConvNet 原实现中 ConvFeatNet 的多尺度融合步骤：</span>
+<span class="sd">        x = torch.cat([xx1,</span>
+<span class="sd">                       xx2[:, :, :xx1.shape[-1]],</span>
+<span class="sd">                       xx3[:, :, :xx1.shape[-1]]], 1)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        feat_high (torch.Tensor): 高分辨率特征，形状 (B, C_h, L_h)。</span>
+<span class="sd">        feat_mid (torch.Tensor): 中等分辨率特征，形状 (B, C_m, L_m)。</span>
+<span class="sd">        feat_low (torch.Tensor): 低分辨率特征，形状 (B, C_l, L_l)。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 融合后的多尺度特征，形状 (B, C_h + C_m + C_l, L_h)。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">feat_high</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">feat_mid</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">feat_low</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> \
+        <span class="s2">&quot;All inputs must be 3D tensors of shape (B, C, L).&quot;</span>
+
+    <span class="n">B_h</span><span class="p">,</span> <span class="n">C_h</span><span class="p">,</span> <span class="n">L_h</span> <span class="o">=</span> <span class="n">feat_high</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">B_m</span><span class="p">,</span> <span class="n">C_m</span><span class="p">,</span> <span class="n">L_m</span> <span class="o">=</span> <span class="n">feat_mid</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">B_l</span><span class="p">,</span> <span class="n">C_l</span><span class="p">,</span> <span class="n">L_l</span> <span class="o">=</span> <span class="n">feat_low</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">assert</span> <span class="n">B_h</span> <span class="o">==</span> <span class="n">B_m</span> <span class="o">==</span> <span class="n">B_l</span><span class="p">,</span> <span class="s2">&quot;Batch size of all feature maps must match.&quot;</span>
+
+    <span class="c1"># 在长度维度上对齐到 L_h</span>
+    <span class="n">feat_mid_aligned</span> <span class="o">=</span> <span class="n">feat_mid</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">L_h</span><span class="p">]</span>
+    <span class="n">feat_low_aligned</span> <span class="o">=</span> <span class="n">feat_low</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">L_h</span><span class="p">]</span>
+
+    <span class="c1"># 通道维拼接</span>
+    <span class="n">fused</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">feat_high</span><span class="p">,</span> <span class="n">feat_mid_aligned</span><span class="p">,</span> <span class="n">feat_low_aligned</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fused</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="_1">▶ 下一部分<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>进入：<br />
+<a href="../framework_overview/"><strong>F-ConvNet Pipeline 总框架</strong></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand", "navigation.sections", "navigation.top", "toc.integrate", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
