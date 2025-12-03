@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>几何阶段 - EPNet Li-Fusion 文档</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/overrides.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u51e0\u4f55\u9636\u6bb5";
+        var mkdocs_page_input_path = "geometry_stage.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> EPNet Li-Fusion 文档
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">文档首页</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Li-Fusion 模块</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../li_fusion_framework/">模块整体</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">几何阶段</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_1">模块简介</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">模块结构</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-lidar_point_extractor">1. lidar_point_extractor</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.lidar_point_extractor">lidar_point_extractor</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.lidar_point_extractor.lidar_point_extractor">lidar_point_extractor</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#2-lidar_to_image_projector">2. lidar_to_image_projector</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.lidar_to_image_projector">lidar_to_image_projector</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.lidar_to_image_projector.lidar_to_image_projector">lidar_to_image_projector</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#3-grid_generator">3. grid_generator</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.grid_generator">grid_generator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.grid_generator.grid_generator">grid_generator</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#4-image_sampler">4. image_sampler</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.image_sampler">image_sampler</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#geometry_stage.operator.image_sampler.image_sampler">image_sampler</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fusion_stage/">融合阶段</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">EPNet Li-Fusion 文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Li-Fusion 模块</li>
+      <li class="breadcrumb-item active">几何阶段</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="geometry-stage">Geometry Stage 模块<a class="headerlink" href="#geometry-stage" title="Permanent link">&para;</a></h1>
+<h2 id="_1">模块简介<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p><code>Geometry Stage</code>（几何阶段）是 Li-Fusion 框架的第一阶段，负责将 LiDAR 点云与图像在几何空间上对齐。<br />
+该阶段由一系列<strong>自定义算子（Custom Ops）</strong>组成，完成从三维点到二维像素的映射，为后续融合阶段提供特征级对齐的数据基础。</p>
+<hr />
+<h2 id="_2">模块结构<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>算子名称</th>
+<th>功能说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>lidar_point_extractor</strong></td>
+<td>从点云中提取 (x, y, z) 三维坐标。</td>
+</tr>
+<tr>
+<td><strong>lidar_to_image_projector</strong></td>
+<td>利用相机外参 (R, t) 与内参 (K) 将 LiDAR 点投影到图像平面，生成像素坐标 (u, v) 与深度 depth。</td>
+</tr>
+<tr>
+<td><strong>grid_generator</strong></td>
+<td>将像素坐标 (u, v) 转换为 <code>grid_sample</code> 可用的归一化采样网格 grid，并生成有效点掩码 mask。</td>
+</tr>
+<tr>
+<td><strong>image_sampler</strong></td>
+<td>根据采样网格 grid，在图像特征图上执行双线性插值采样，提取逐点图像特征，实现点云-图像对齐。</td>
+</tr>
+</tbody>
+</table>
+<p>这些算子共同完成以下数据流：</p>
+<p>LiDAR点云 → (提取坐标) → lidar_point_extractor
+→ (投影至图像平面) → lidar_to_image_projector
+→ (生成归一化网格) → grid_generator
+→ (采样图像特征) → image_sampler</p>
+<p>输出结果包括：
+- 对齐后的像素坐标 <code>uv</code>
+- 深度图 <code>depth</code>
+- 有效掩码 <code>mask</code>
+- 对应的逐点图像特征 <code>Fi_point</code></p>
+<hr />
+<h3 id="1-lidar_point_extractor">1. lidar_point_extractor<a class="headerlink" href="#1-lidar_point_extractor" title="Permanent link">&para;</a></h3>
+<p>提取点云坐标 <code>(x, y, z)</code>，为后续投影提供输入。
+</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="geometry_stage.operator.lidar_point_extractor"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="geometry_stage.operator.lidar_point_extractor.lidar_point_extractor" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">lidar_point_extractor</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">)</span></code>
+
+<a href="#geometry_stage.operator.lidar_point_extractor.lidar_point_extractor" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Li-Fusion 模块中的点云坐标提取算子。</p>
+<p>从原始点云数据中提取三维坐标 (x, y, z)，用于后续几何投影与特征对齐。
+输入的点云可能包含额外信息（如强度、反射率等），此函数仅保留前三个坐标通道。</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>pointcloud</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>原始点云输入，形状 (B, N, C&gt;=3)。
+- B: 批大小 (batch size)
+- N: 点数 (number of points)
+- C: 每个点的通道数，至少包含 (x, y, z)</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+              –
+              <div class="doc-md-description">
+                <p>torch.Tensor: 点云坐标张量 xyz，形状 (B, N, 3)。
+- 第 0~2 通道分别对应 (x, y, z)</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>geometry_stage\operator\lidar_point_extractor.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;li_fusion::lidar_point_extractor&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lidar_point_extractor</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Li-Fusion 模块中的点云坐标提取算子。</span>
+
+<span class="sd">    从原始点云数据中提取三维坐标 (x, y, z)，用于后续几何投影与特征对齐。</span>
+<span class="sd">    输入的点云可能包含额外信息（如强度、反射率等），此函数仅保留前三个坐标通道。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pointcloud (torch.Tensor): 原始点云输入，形状 (B, N, C&gt;=3)。</span>
+<span class="sd">            - B: 批大小 (batch size)</span>
+<span class="sd">            - N: 点数 (number of points)</span>
+<span class="sd">            - C: 每个点的通道数，至少包含 (x, y, z)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 点云坐标张量 xyz，形状 (B, N, 3)。</span>
+<span class="sd">            - 第 0~2 通道分别对应 (x, y, z)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">pointcloud</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>  <span class="c1"># 提取 (x, y, z)，保持内存连续</span>
+    <span class="k">return</span> <span class="n">xyz</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h3 id="2-lidar_to_image_projector">2. lidar_to_image_projector<a class="headerlink" href="#2-lidar_to_image_projector" title="Permanent link">&para;</a></h3>
+<p>根据相机参数 <code>(R, t, K)</code> 计算点云在图像平面的投影结果。
+</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="geometry_stage.operator.lidar_to_image_projector"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="geometry_stage.operator.lidar_to_image_projector.lidar_to_image_projector" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">lidar_to_image_projector</span><span class="p">(</span><span class="n">lidar_points</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span></code>
+
+<a href="#geometry_stage.operator.lidar_to_image_projector.lidar_to_image_projector" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Li-Fusion 模块中的点云到图像坐标投影算子。</p>
+<p>将三维点云坐标 (x, y, z) 投影到相机平面，得到像素坐标 (u, v) 与深度值 depth。
+该算子执行矩阵运算 M = K [R|t]，完成点云从 LiDAR 坐标系到图像坐标系的转换。</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>lidar_points</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>点云坐标，形状 (B, N, 3)
+- B: 批大小
+- N: 点数
+- 每个点包含 (x, y, z)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>R</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>相机外参旋转矩阵，形状 (B, 3, 3)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>t</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>相机外参平移向量，形状 (B, 3, 1)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>K</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>相机内参矩阵，形状 (B, 3, 3)</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.List">List</span>[<span title="torch.Tensor">Tensor</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>List[torch.Tensor]:
+- <strong>uv</strong>: 投影到图像平面的像素坐标 (B, N, 2)
+- <strong>depth</strong>: 对应深度值 (B, N, 1)
+- <strong>M</strong>: 相机投影矩阵 K [R|t] (B, 3, 4)</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>geometry_stage\operator\lidar_to_image_projector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;li_fusion::lidar_to_image_projector&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lidar_to_image_projector</span><span class="p">(</span>
+    <span class="n">lidar_points</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># (B, N, 3)</span>
+    <span class="n">R</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>             <span class="c1"># (B, 3, 3)</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>             <span class="c1"># (B, 3, 1)</span>
+    <span class="n">K</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>              <span class="c1"># (B, 3, 3)</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Li-Fusion 模块中的点云到图像坐标投影算子。</span>
+
+<span class="sd">    将三维点云坐标 (x, y, z) 投影到相机平面，得到像素坐标 (u, v) 与深度值 depth。</span>
+<span class="sd">    该算子执行矩阵运算 M = K [R|t]，完成点云从 LiDAR 坐标系到图像坐标系的转换。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lidar_points (torch.Tensor): 点云坐标，形状 (B, N, 3)</span>
+<span class="sd">            - B: 批大小</span>
+<span class="sd">            - N: 点数</span>
+<span class="sd">            - 每个点包含 (x, y, z)</span>
+<span class="sd">        R (torch.Tensor): 相机外参旋转矩阵，形状 (B, 3, 3)</span>
+<span class="sd">        t (torch.Tensor): 相机外参平移向量，形状 (B, 3, 1)</span>
+<span class="sd">        K (torch.Tensor): 相机内参矩阵，形状 (B, 3, 3)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[torch.Tensor]:</span>
+<span class="sd">            - **uv**: 投影到图像平面的像素坐标 (B, N, 2)</span>
+<span class="sd">            - **depth**: 对应深度值 (B, N, 1)</span>
+<span class="sd">            - **M**: 相机投影矩阵 K [R|t] (B, 3, 4)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">B</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lidar_points</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">lidar_points</span><span class="o">.</span><span class="n">device</span>
+
+    <span class="c1"># Step 1: 齐次坐标</span>
+    <span class="n">ones</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">B</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">lidar_homo</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">lidar_points</span><span class="p">,</span> <span class="n">ones</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (B, N, 4)</span>
+
+    <span class="c1"># Step 2: 投影矩阵 M = K [R|t]</span>
+    <span class="n">Rt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">R</span><span class="p">,</span> <span class="n">t</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>                       <span class="c1"># (B, 3, 4)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">Rt</span><span class="p">)</span>                                 <span class="c1"># (B, 3, 4)</span>
+
+    <span class="c1"># Step 3: 投影到相机平面</span>
+    <span class="n">uv_depth</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">lidar_homo</span><span class="p">,</span> <span class="n">M</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># (B, N, 3)</span>
+
+    <span class="c1"># Step 4: 提取 (u, v) 与 depth</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">uv_depth</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>                           <span class="c1"># (B, N, 1)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">uv_depth</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">depth</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span>        <span class="c1"># (B, N)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">uv_depth</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">depth</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span>
+    <span class="n">uv</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>                     <span class="c1"># (B, N, 2)</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">uv</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">depth</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">M</span><span class="o">.</span><span class="n">clone</span><span class="p">()]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h3 id="3-grid_generator">3. grid_generator<a class="headerlink" href="#3-grid_generator" title="Permanent link">&para;</a></h3>
+<p>生成归一化采样网格 <code>grid:(B,1,N,2)</code> 和有效掩码 <code>mask:(B,N)</code>。
+</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="geometry_stage.operator.grid_generator"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="geometry_stage.operator.grid_generator.grid_generator" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">grid_generator</span><span class="p">(</span><span class="n">img_w</span><span class="p">,</span> <span class="n">img_h</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span></code>
+
+<a href="#geometry_stage.operator.grid_generator.grid_generator" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Li-Fusion 模块中的采样网格生成算子。</p>
+<p>根据点云投影后的像素坐标 (u, v) 与深度值，生成归一化采样网格、归一化坐标与有效掩码。
+该算子用于从图像特征图中按点云投影位置采样特征，是 Li-Fusion 模块中几何对齐的关键步骤。</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>img_w</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>图像宽度 W。</p>
+              </div>
+            </li>
+            <li>
+              <b><code>img_h</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>图像高度 H。</p>
+              </div>
+            </li>
+            <li>
+              <b><code>uv</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>点云投影到图像平面的像素坐标，形状为 (B, N, 2)。
+- B: 批大小
+- N: 点数量
+- 每个点包含像素坐标 (u, v)</p>
+              </div>
+            </li>
+            <li>
+              <b><code>depth</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>投影点对应的深度值，形状为 (B, N, 1)。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.List">List</span>[<span title="torch.Tensor">Tensor</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>List[torch.Tensor]: 列表 [xy_norm, grid, mask]。
+- <strong>xy_norm</strong> (<code>torch.Tensor</code>): 归一化像素坐标 (-1~1)，形状 (B, N, 2)。
+- <strong>grid</strong> (<code>torch.Tensor</code>): 用于 <code>torch.nn.functional.grid_sample</code> 的采样网格，形状 (B, 1, N, 2)。
+- <strong>mask</strong> (<code>torch.Tensor</code>): 有效点掩码，True 表示点在图像范围内，形状 (B, N)。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>geometry_stage\operator\grid_generator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;li_fusion::grid_generator&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">grid_generator</span><span class="p">(</span><span class="n">img_w</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">img_h</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">uv</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Li-Fusion 模块中的采样网格生成算子。</span>
+
+<span class="sd">    根据点云投影后的像素坐标 (u, v) 与深度值，生成归一化采样网格、归一化坐标与有效掩码。</span>
+<span class="sd">    该算子用于从图像特征图中按点云投影位置采样特征，是 Li-Fusion 模块中几何对齐的关键步骤。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        img_w (int): 图像宽度 W。</span>
+<span class="sd">        img_h (int): 图像高度 H。</span>
+<span class="sd">        uv (torch.Tensor): 点云投影到图像平面的像素坐标，形状为 (B, N, 2)。</span>
+<span class="sd">            - B: 批大小</span>
+<span class="sd">            - N: 点数量</span>
+<span class="sd">            - 每个点包含像素坐标 (u, v)</span>
+<span class="sd">        depth (torch.Tensor): 投影点对应的深度值，形状为 (B, N, 1)。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[torch.Tensor]: 列表 [xy_norm, grid, mask]。</span>
+<span class="sd">            - **xy_norm** (`torch.Tensor`): 归一化像素坐标 (-1~1)，形状 (B, N, 2)。</span>
+<span class="sd">            - **grid** (`torch.Tensor`): 用于 `torch.nn.functional.grid_sample` 的采样网格，形状 (B, 1, N, 2)。</span>
+<span class="sd">            - **mask** (`torch.Tensor`): 有效点掩码，True 表示点在图像范围内，形状 (B, N)。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">W</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">img_w</span><span class="p">,</span> <span class="n">img_h</span>
+
+    <span class="c1"># 避免直接对 uv 的视图进行后续计算，先拷贝一份（可选但更稳）</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">uv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>         <span class="c1"># 或 uv[..., 0].clone()</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">uv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+    <span class="n">valid_depth</span> <span class="o">=</span> <span class="p">(</span><span class="n">depth</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">valid_u</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">u</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">W</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">valid_v</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">v</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">valid_depth</span> <span class="o">&amp;</span> <span class="n">valid_u</span> <span class="o">&amp;</span> <span class="n">valid_v</span><span class="p">)</span>
+
+    <span class="n">u_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span> <span class="o">/</span> <span class="p">(</span><span class="n">W</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.0</span>
+    <span class="n">v_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span> <span class="o">/</span> <span class="p">(</span><span class="n">H</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.0</span>
+    <span class="n">xy_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">u_norm</span><span class="p">,</span> <span class="n">v_norm</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">xy_norm</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+
+    <span class="c1"># 关键：返回前做 clone，确保与输入不共享存储</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">xy_norm</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">grid</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">mask</span><span class="o">.</span><span class="n">clone</span><span class="p">()]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h3 id="4-image_sampler">4. image_sampler<a class="headerlink" href="#4-image_sampler" title="Permanent link">&para;</a></h3>
+<p>利用 <code>grid_sample</code> 在图像特征图上采样每个点的图像特征，实现几何级融合。
+</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="geometry_stage.operator.image_sampler"></a>
+    <div class="doc doc-contents first">
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="geometry_stage.operator.image_sampler.image_sampler" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">image_sampler</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span></code>
+
+<a href="#geometry_stage.operator.image_sampler.image_sampler" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Li-Fusion 模块中的图像特征采样算子。</p>
+<p>基于 <code>grid_sample</code> 操作，从图像特征图中按指定采样网格提取逐点特征。
+通常与 <code>grid_generator</code> 配合使用，实现点云到图像特征的对齐。</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>feature_map</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>图像特征图，形状 (B, C, H, W)。</p>
+              </div>
+            </li>
+            <li>
+              <b><code>grid</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>采样网格，形状 (B, 1, N, 2)，来自 <code>grid_generator</code>。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+              –
+              <div class="doc-md-description">
+                <p>torch.Tensor: 采样到的逐点图像特征，形状 (B, C, N)。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>geometry_stage\operator\image_sampler.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@torch</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">custom_op</span><span class="p">(</span><span class="s2">&quot;li_fusion::image_sampler&quot;</span><span class="p">,</span> <span class="n">mutates_args</span><span class="o">=</span><span class="p">[])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">image_sampler</span><span class="p">(</span><span class="n">feature_map</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Li-Fusion 模块中的图像特征采样算子。</span>
+
+<span class="sd">    基于 `grid_sample` 操作，从图像特征图中按指定采样网格提取逐点特征。</span>
+<span class="sd">    通常与 `grid_generator` 配合使用，实现点云到图像特征的对齐。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        feature_map (torch.Tensor): 图像特征图，形状 (B, C, H, W)。</span>
+<span class="sd">        grid (torch.Tensor): 采样网格，形状 (B, 1, N, 2)，来自 `grid_generator`。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 采样到的逐点图像特征，形状 (B, C, N)。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sampled</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">grid_sample</span><span class="p">(</span><span class="n">feature_map</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># (B, C, 1, N)</span>
+    <span class="n">sampled</span> <span class="o">=</span> <span class="n">sampled</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">sampled</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../li_fusion_framework/" class="btn btn-neutral float-left" title="模块整体"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../fusion_stage/" class="btn btn-neutral float-right" title="融合阶段">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../li_fusion_framework/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../fusion_stage/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

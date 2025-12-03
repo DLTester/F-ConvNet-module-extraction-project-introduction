@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>模块整体 - EPNet Li-Fusion 文档</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../css/overrides.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u6a21\u5757\u6574\u4f53";
+        var mkdocs_page_input_path = "li_fusion_framework.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> EPNet Li-Fusion 文档
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">文档首页</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Li-Fusion 模块</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">模块整体</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_1">模块概览</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lidar">LiDAR 特征提取基类</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#net.interface.lidar_backbone_interface.LiDARBackbone">LiDARBackbone</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#net.interface.lidar_backbone_interface.LiDARBackbone.forward">forward</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">图像特征提取基类</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#net.interface.image_backbone_interface.ImageBackbone">ImageBackbone</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#net.interface.image_backbone_interface.ImageBackbone.forward">forward</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">融合核心模块</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#li_fusion_framework.LIFusionCore">LIFusionCore</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#li_fusion_framework.LIFusionCore.__init__">__init__</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#li_fusion_framework.LIFusionCore.forward">forward</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#li-fusion">Li-Fusion 全流程管线</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#li_fusion_framework.LIFusionPipeline">LIFusionPipeline</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#li_fusion_framework.LIFusionPipeline.__init__">__init__</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#li_fusion_framework.LIFusionPipeline.forward">forward</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../geometry_stage/">几何阶段</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fusion_stage/">融合阶段</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">EPNet Li-Fusion 文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Li-Fusion 模块</li>
+      <li class="breadcrumb-item active">模块整体</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="li-fusion-framework">Li-Fusion Framework 模块文档<a class="headerlink" href="#li-fusion-framework" title="Permanent link">&para;</a></h1>
+<p>本模块定义了 EPNet 风格的 <strong>LiDAR-Image 融合框架 (Li-Fusion Framework)</strong>，<br />
+整合了几何对齐与特征融合两个阶段，实现点云与图像的端到端特征融合。</p>
+<hr />
+<h2 id="_1">模块概览<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>模块路径：<code>li_fusion_framework</code></p>
+<p>核心功能包括：
+- 点云与图像特征提取（Backbone 模块）；
+- 点云到图像的几何投影；
+- 特征网格采样；
+- 特征融合（加权 + 门控 + 拼接）。</p>
+<hr />
+<h2 id="lidar">LiDAR 特征提取基类<a class="headerlink" href="#lidar" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="net.interface.lidar_backbone_interface.LiDARBackbone"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code>, <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+        <p>LiDAR 特征提取基类，定义点云特征抽取接口。</p>
+
+              <details class="quote">
+                <summary>Source code in <code>net\interface\lidar_backbone_interface.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LiDARBackbone</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LiDAR 特征提取基类，定义点云特征抽取接口。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pointcloud</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        点云特征提取。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pointcloud (torch.Tensor): 点云输入，形状 (B, N, C&gt;=3)。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: 逐点特征 (B, Dp, N)。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="net.interface.lidar_backbone_interface.LiDARBackbone.forward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#net.interface.lidar_backbone_interface.LiDARBackbone.forward" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>点云特征提取。</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>pointcloud</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>点云输入，形状 (B, N, C&gt;=3)。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="torch.Tensor">Tensor</span></code>
+              –
+              <div class="doc-md-description">
+                <p>torch.Tensor: 逐点特征 (B, Dp, N)。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>net\interface\lidar_backbone_interface.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pointcloud</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    点云特征提取。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pointcloud (torch.Tensor): 点云输入，形状 (B, N, C&gt;=3)。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        torch.Tensor: 逐点特征 (B, Dp, N)。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><p>抽象类，定义点云特征提取器接口，负责将点云坐标映射为逐点特征。<br />
+用户可继承该类实现自定义点云特征网络（如 PointNet、PointNet++ 等）。</p>
+<hr />
+<h2 id="_2">图像特征提取基类<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="net.interface.image_backbone_interface.ImageBackbone"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code>, <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+        <p>图像特征提取接口</p>
+
+              <details class="quote">
+                <summary>Source code in <code>net\interface\image_backbone_interface.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ImageBackbone</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;图像特征提取接口&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;(B,3,H,W) -&gt; (B,Ci,H,W)&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="net.interface.image_backbone_interface.ImageBackbone.forward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">image</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#net.interface.image_backbone_interface.ImageBackbone.forward" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>(B,3,H,W) -&gt; (B,Ci,H,W)</p>
+
+            <details class="quote">
+              <summary>Source code in <code>net\interface\image_backbone_interface.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;(B,3,H,W) -&gt; (B,Ci,H,W)&quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><p>抽象类，定义图像特征提取器接口，用于从输入图像中提取特征图。<br />
+用户可替换为任意 CNN 或 Transformer 结构（如 ResNet、Swin Transformer 等）。</p>
+<hr />
+<h2 id="_3">融合核心模块<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="li_fusion_framework.LIFusionCore"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+        <p>Li-Fusion 核心融合模块：
+对齐点云和图像通道后执行加权融合。</p>
+
+              <details class="quote">
+                <summary>Source code in <code>li_fusion_framework.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LIFusionCore</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Li-Fusion 核心融合模块：</span>
+<span class="sd">    对齐点云和图像通道后执行加权融合。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_p</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">in_i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            in_p (int): 点云特征通道数。</span>
+<span class="sd">            in_i (int): 图像特征通道数。</span>
+<span class="sd">            fuse_d (int): 融合后目标通道数。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_p</span> <span class="o">=</span> <span class="n">FCAlignP</span><span class="p">(</span><span class="n">in_p</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">,</span> <span class="n">use_bn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>      <span class="c1"># 点云通道对齐层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_i</span> <span class="o">=</span> <span class="n">FCAlignI</span><span class="p">(</span><span class="n">in_i</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">,</span> <span class="n">use_bn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>      <span class="c1"># 图像通道对齐层</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc_w</span> <span class="o">=</span> <span class="n">FeatureWeightFC</span><span class="p">(</span><span class="n">in_dim</span><span class="o">=</span><span class="n">fuse_d</span><span class="p">,</span> <span class="n">out_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_bn</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 权重生成层</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Fp</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Fi_point</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        执行跨模态融合。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            Fp (torch.Tensor): 点云特征，形状 (B, Dp, N)。</span>
+<span class="sd">            Fi_point (torch.Tensor): 图像采样特征，形状 (B, Ci, N)。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[torch.Tensor, Dict[str, torch.Tensor]]:</span>
+<span class="sd">                - F_LI: 融合特征 (B, 2*fuse_d, N)</span>
+<span class="sd">                - info: 信息字典（含中间结果与权重），键包括：</span>
+<span class="sd">                    {&quot;w&quot;: (B,1,N), &quot;Fp_&quot;: (B,fuse_d,N), &quot;Fi_&quot;: (B,fuse_d,N),</span>
+<span class="sd">                     &quot;H&quot;: (B,fuse_d,N), &quot;Fi_gated&quot;: (B,fuse_d,N)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Fp_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_p</span><span class="p">(</span><span class="n">Fp</span><span class="p">)</span>  <span class="c1"># 点云特征通道对齐</span>
+        <span class="n">Fi_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_i</span><span class="p">(</span><span class="n">Fi_point</span><span class="p">)</span>  <span class="c1"># 图像特征通道对齐</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">li_fusion_add</span><span class="p">(</span><span class="n">Fp_</span><span class="p">,</span> <span class="n">Fi_</span><span class="p">,</span> <span class="n">apply_tanh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 融合特征相加 + 激活</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_w</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>  <span class="c1"># 生成融合权重</span>
+        <span class="n">Fi_gated</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">li_fusion_muti</span><span class="p">(</span><span class="n">Fi_</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">sigmoid_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 权重门控图像特征</span>
+        <span class="n">F_LI</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">li_fusion_concat</span><span class="p">([</span><span class="n">Fp_</span><span class="p">,</span> <span class="n">Fi_gated</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 拼接融合输出</span>
+
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="s2">&quot;Fp_&quot;</span><span class="p">:</span> <span class="n">Fp_</span><span class="p">,</span> <span class="s2">&quot;Fi_&quot;</span><span class="p">:</span> <span class="n">Fi_</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="n">H</span><span class="p">,</span> <span class="s2">&quot;Fi_gated&quot;</span><span class="p">:</span> <span class="n">Fi_gated</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">F_LI</span><span class="p">,</span> <span class="n">info</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="li_fusion_framework.LIFusionCore.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">in_p</span><span class="p">,</span> <span class="n">in_i</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">)</span></code>
+
+<a href="#li_fusion_framework.LIFusionCore.__init__" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>in_p</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>点云特征通道数。</p>
+              </div>
+            </li>
+            <li>
+              <b><code>in_i</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>图像特征通道数。</p>
+              </div>
+            </li>
+            <li>
+              <b><code>fuse_d</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>融合后目标通道数。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>li_fusion_framework.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_p</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">in_i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        in_p (int): 点云特征通道数。</span>
+<span class="sd">        in_i (int): 图像特征通道数。</span>
+<span class="sd">        fuse_d (int): 融合后目标通道数。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fc_p</span> <span class="o">=</span> <span class="n">FCAlignP</span><span class="p">(</span><span class="n">in_p</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">,</span> <span class="n">use_bn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>      <span class="c1"># 点云通道对齐层</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fc_i</span> <span class="o">=</span> <span class="n">FCAlignI</span><span class="p">(</span><span class="n">in_i</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">,</span> <span class="n">use_bn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>      <span class="c1"># 图像通道对齐层</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fc_w</span> <span class="o">=</span> <span class="n">FeatureWeightFC</span><span class="p">(</span><span class="n">in_dim</span><span class="o">=</span><span class="n">fuse_d</span><span class="p">,</span> <span class="n">out_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_bn</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 权重生成层</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="li_fusion_framework.LIFusionCore.forward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">Fp</span><span class="p">,</span> <span class="n">Fi_point</span><span class="p">)</span></code>
+
+<a href="#li_fusion_framework.LIFusionCore.forward" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>执行跨模态融合。</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>Fp</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>点云特征，形状 (B, Dp, N)。</p>
+              </div>
+            </li>
+            <li>
+              <b><code>Fi_point</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>图像采样特征，形状 (B, Ci, N)。</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Tuple">Tuple</span>[<span title="torch.Tensor">Tensor</span>, <span title="typing.Dict">Dict</span>[str, <span title="torch.Tensor">Tensor</span>]]</code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+- F_LI: 融合特征 (B, 2*fuse_d, N)
+- info: 信息字典（含中间结果与权重），键包括：
+    {"w": (B,1,N), "Fp_": (B,fuse_d,N), "Fi_": (B,fuse_d,N),
+     "H": (B,fuse_d,N), "Fi_gated": (B,fuse_d,N)}</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>li_fusion_framework.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Fp</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Fi_point</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    执行跨模态融合。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Fp (torch.Tensor): 点云特征，形状 (B, Dp, N)。</span>
+<span class="sd">        Fi_point (torch.Tensor): 图像采样特征，形状 (B, Ci, N)。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[torch.Tensor, Dict[str, torch.Tensor]]:</span>
+<span class="sd">            - F_LI: 融合特征 (B, 2*fuse_d, N)</span>
+<span class="sd">            - info: 信息字典（含中间结果与权重），键包括：</span>
+<span class="sd">                {&quot;w&quot;: (B,1,N), &quot;Fp_&quot;: (B,fuse_d,N), &quot;Fi_&quot;: (B,fuse_d,N),</span>
+<span class="sd">                 &quot;H&quot;: (B,fuse_d,N), &quot;Fi_gated&quot;: (B,fuse_d,N)}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Fp_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_p</span><span class="p">(</span><span class="n">Fp</span><span class="p">)</span>  <span class="c1"># 点云特征通道对齐</span>
+    <span class="n">Fi_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_i</span><span class="p">(</span><span class="n">Fi_point</span><span class="p">)</span>  <span class="c1"># 图像特征通道对齐</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">li_fusion_add</span><span class="p">(</span><span class="n">Fp_</span><span class="p">,</span> <span class="n">Fi_</span><span class="p">,</span> <span class="n">apply_tanh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 融合特征相加 + 激活</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc_w</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>  <span class="c1"># 生成融合权重</span>
+    <span class="n">Fi_gated</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">li_fusion_muti</span><span class="p">(</span><span class="n">Fi_</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">sigmoid_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 权重门控图像特征</span>
+    <span class="n">F_LI</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">li_fusion_concat</span><span class="p">([</span><span class="n">Fp_</span><span class="p">,</span> <span class="n">Fi_gated</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 拼接融合输出</span>
+
+    <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="s2">&quot;Fp_&quot;</span><span class="p">:</span> <span class="n">Fp_</span><span class="p">,</span> <span class="s2">&quot;Fi_&quot;</span><span class="p">:</span> <span class="n">Fi_</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="n">H</span><span class="p">,</span> <span class="s2">&quot;Fi_gated&quot;</span><span class="p">:</span> <span class="n">Fi_gated</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">F_LI</span><span class="p">,</span> <span class="n">info</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+<h2 id="li-fusion">Li-Fusion 全流程管线<a class="headerlink" href="#li-fusion" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="li_fusion_framework.LIFusionPipeline"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="torch.nn.Module">Module</span></code></p>
+
+
+        <p>Li-Fusion 融合流程管线 / Li-Fusion pipeline.</p>
+<p>负责：几何映射 → 图像采样到点 → Backbone 提特征 → 核心融合。
+注意：本版本在 <strong>init</strong> 中<strong>直接实例化 fusion_core</strong>，不再懒构造。</p>
+
+              <details class="quote">
+                <summary>Source code in <code>li_fusion_framework.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LIFusionPipeline</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Li-Fusion 融合流程管线 / Li-Fusion pipeline.</span>
+
+<span class="sd">    负责：几何映射 → 图像采样到点 → Backbone 提特征 → 核心融合。</span>
+<span class="sd">    注意：本版本在 __init__ 中**直接实例化 fusion_core**，不再懒构造。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">lidar_backbone</span><span class="p">:</span> <span class="n">LiDARBackbone</span><span class="p">,</span>
+                 <span class="n">image_backbone</span><span class="p">:</span> <span class="n">ImageBackbone</span><span class="p">,</span>
+                 <span class="n">in_p</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">in_i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">fuse_d</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            lidar_backbone (LiDARBackbone): 点云特征提取模块.</span>
+<span class="sd">            image_backbone (ImageBackbone): 图像特征提取模块.</span>
+<span class="sd">            in_p (int): 点云特征通道数 Dp（传给融合核心）.</span>
+<span class="sd">            in_i (int): 图像特征通道数 Ci（传给融合核心）.</span>
+<span class="sd">            fuse_d (int): 融合/对齐维度.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lidar_backbone</span> <span class="o">=</span> <span class="n">lidar_backbone</span>                 <span class="c1"># 保存骨干</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_backbone</span> <span class="o">=</span> <span class="n">image_backbone</span>                 <span class="c1"># 保存骨干</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuse_d</span> <span class="o">=</span> <span class="n">fuse_d</span>                                 <span class="c1"># 融合维度</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusion_core</span> <span class="o">=</span> <span class="n">LIFusionCore</span><span class="p">(</span><span class="n">in_p</span><span class="o">=</span><span class="n">in_p</span><span class="p">,</span>           <span class="c1"># 直接实例化</span>
+                                        <span class="n">in_i</span><span class="o">=</span><span class="n">in_i</span><span class="p">,</span>
+                                        <span class="n">fuse_d</span><span class="o">=</span><span class="n">fuse_d</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">pointcloud</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+                <span class="n">image</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+                <span class="n">R</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+                <span class="n">t</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+                <span class="n">K</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        执行完整 Li-Fusion 前向流程 / Full forward.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pointcloud (torch.Tensor): 点云 (B, N, C&gt;=3).</span>
+<span class="sd">            image (torch.Tensor): 图像 (B, 3, H, W).</span>
+<span class="sd">            R (torch.Tensor): 相机旋转矩阵.</span>
+<span class="sd">            t (torch.Tensor): 相机平移向量.</span>
+<span class="sd">            K (torch.Tensor): 相机内参矩阵.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[torch.Tensor, Dict[str, torch.Tensor]]:</span>
+<span class="sd">                - F_LI: 融合特征 (B, 2*fuse_d, N)</span>
+<span class="sd">                - info: 信息字典，至少包含 {&quot;mask&quot;: (B,N), &quot;w&quot;: (B,1,N)}，</span>
+<span class="sd">                        并合并融合核心的中间结果（&quot;Fp_&quot;,&quot;Fi_&quot;,&quot;H&quot;,&quot;Fi_gated&quot;）</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># 尺度</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">lidar_point_extractor</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">)</span>
+        <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">_M</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">lidar_to_image_projector</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>  <span class="c1"># 投影到像素平面</span>
+        <span class="n">_xy_norm</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">grid_generator</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>  <span class="c1"># 生成采样网格与掩码</span>
+
+        <span class="n">fmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_backbone</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>  <span class="c1"># (B, Ci, H, W)</span>
+        <span class="n">Fi_point</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">image_sampler</span><span class="p">(</span><span class="n">fmap</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>  <span class="c1"># (B, Ci, N)：按点采样</span>
+        <span class="n">Fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lidar_backbone</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">)</span>  <span class="c1"># (B, Dp, N)：点云特征</span>
+
+        <span class="n">F_LI</span><span class="p">,</span> <span class="n">core_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fusion_core</span><span class="p">(</span><span class="n">Fp</span><span class="p">,</span> <span class="n">Fi_point</span><span class="p">)</span>  <span class="c1"># 融合核心：主特征+字典</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mask&quot;</span><span class="p">:</span> <span class="n">mask</span><span class="p">,</span> <span class="o">**</span><span class="n">core_info</span><span class="p">}</span>  <span class="c1"># 合并掩码</span>
+        <span class="k">return</span> <span class="n">F_LI</span><span class="p">,</span> <span class="n">info</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="li_fusion_framework.LIFusionPipeline.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">lidar_backbone</span><span class="p">,</span> <span class="n">image_backbone</span><span class="p">,</span> <span class="n">in_p</span><span class="p">,</span> <span class="n">in_i</span><span class="p">,</span> <span class="n">fuse_d</span><span class="p">)</span></code>
+
+<a href="#li_fusion_framework.LIFusionPipeline.__init__" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>lidar_backbone</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="net.interface.lidar_backbone_interface.LiDARBackbone" href="#net.interface.lidar_backbone_interface.LiDARBackbone">LiDARBackbone</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>点云特征提取模块.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>image_backbone</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="net.interface.image_backbone_interface.ImageBackbone" href="#net.interface.image_backbone_interface.ImageBackbone">ImageBackbone</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>图像特征提取模块.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>in_p</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>点云特征通道数 Dp（传给融合核心）.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>in_i</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>图像特征通道数 Ci（传给融合核心）.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>fuse_d</code></b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>融合/对齐维度.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>li_fusion_framework.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">lidar_backbone</span><span class="p">:</span> <span class="n">LiDARBackbone</span><span class="p">,</span>
+             <span class="n">image_backbone</span><span class="p">:</span> <span class="n">ImageBackbone</span><span class="p">,</span>
+             <span class="n">in_p</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+             <span class="n">in_i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+             <span class="n">fuse_d</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        lidar_backbone (LiDARBackbone): 点云特征提取模块.</span>
+<span class="sd">        image_backbone (ImageBackbone): 图像特征提取模块.</span>
+<span class="sd">        in_p (int): 点云特征通道数 Dp（传给融合核心）.</span>
+<span class="sd">        in_i (int): 图像特征通道数 Ci（传给融合核心）.</span>
+<span class="sd">        fuse_d (int): 融合/对齐维度.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">lidar_backbone</span> <span class="o">=</span> <span class="n">lidar_backbone</span>                 <span class="c1"># 保存骨干</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">image_backbone</span> <span class="o">=</span> <span class="n">image_backbone</span>                 <span class="c1"># 保存骨干</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fuse_d</span> <span class="o">=</span> <span class="n">fuse_d</span>                                 <span class="c1"># 融合维度</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fusion_core</span> <span class="o">=</span> <span class="n">LIFusionCore</span><span class="p">(</span><span class="n">in_p</span><span class="o">=</span><span class="n">in_p</span><span class="p">,</span>           <span class="c1"># 直接实例化</span>
+                                    <span class="n">in_i</span><span class="o">=</span><span class="n">in_i</span><span class="p">,</span>
+                                    <span class="n">fuse_d</span><span class="o">=</span><span class="n">fuse_d</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="li_fusion_framework.LIFusionPipeline.forward" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">forward</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span></code>
+
+<a href="#li_fusion_framework.LIFusionPipeline.forward" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>执行完整 Li-Fusion 前向流程 / Full forward.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>pointcloud</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>点云 (B, N, C&gt;=3).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>image</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>图像 (B, 3, H, W).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>R</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>相机旋转矩阵.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>t</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>相机平移向量.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>K</code></b>
+                  (<code><span title="torch.Tensor">Tensor</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>相机内参矩阵.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Dict">Dict</span>[str, <span title="torch.Tensor">Tensor</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+- F_LI: 融合特征 (B, 2*fuse_d, N)
+- info: 信息字典，至少包含 {"mask": (B,N), "w": (B,1,N)}，
+        并合并融合核心的中间结果（"Fp_","Fi_","H","Fi_gated"）</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+            <details class="quote">
+              <summary>Source code in <code>li_fusion_framework.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">pointcloud</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="n">image</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="n">R</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="n">t</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="n">K</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    执行完整 Li-Fusion 前向流程 / Full forward.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pointcloud (torch.Tensor): 点云 (B, N, C&gt;=3).</span>
+<span class="sd">        image (torch.Tensor): 图像 (B, 3, H, W).</span>
+<span class="sd">        R (torch.Tensor): 相机旋转矩阵.</span>
+<span class="sd">        t (torch.Tensor): 相机平移向量.</span>
+<span class="sd">        K (torch.Tensor): 相机内参矩阵.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[torch.Tensor, Dict[str, torch.Tensor]]:</span>
+<span class="sd">            - F_LI: 融合特征 (B, 2*fuse_d, N)</span>
+<span class="sd">            - info: 信息字典，至少包含 {&quot;mask&quot;: (B,N), &quot;w&quot;: (B,1,N)}，</span>
+<span class="sd">                    并合并融合核心的中间结果（&quot;Fp_&quot;,&quot;Fi_&quot;,&quot;H&quot;,&quot;Fi_gated&quot;）</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">B</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># 尺度</span>
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">lidar_point_extractor</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">)</span>
+    <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">_M</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">lidar_to_image_projector</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>  <span class="c1"># 投影到像素平面</span>
+    <span class="n">_xy_norm</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">grid_generator</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>  <span class="c1"># 生成采样网格与掩码</span>
+
+    <span class="n">fmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_backbone</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>  <span class="c1"># (B, Ci, H, W)</span>
+    <span class="n">Fi_point</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">li_fusion</span><span class="o">.</span><span class="n">image_sampler</span><span class="p">(</span><span class="n">fmap</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>  <span class="c1"># (B, Ci, N)：按点采样</span>
+    <span class="n">Fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lidar_backbone</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">)</span>  <span class="c1"># (B, Dp, N)：点云特征</span>
+
+    <span class="n">F_LI</span><span class="p">,</span> <span class="n">core_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fusion_core</span><span class="p">(</span><span class="n">Fp</span><span class="p">,</span> <span class="n">Fi_point</span><span class="p">)</span>  <span class="c1"># 融合核心：主特征+字典</span>
+    <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mask&quot;</span><span class="p">:</span> <span class="n">mask</span><span class="p">,</span> <span class="o">**</span><span class="n">core_info</span><span class="p">}</span>  <span class="c1"># 合并掩码</span>
+    <span class="k">return</span> <span class="n">F_LI</span><span class="p">,</span> <span class="n">info</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="文档首页"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../geometry_stage/" class="btn btn-neutral float-right" title="几何阶段">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../geometry_stage/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
